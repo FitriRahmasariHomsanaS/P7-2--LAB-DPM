@@ -1,109 +1,120 @@
-import { StyleSheet, Image, Platform } from 'react-native';
-
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
+import React, { useState } from 'react';
+import { StyleSheet, View, TextInput, FlatList } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { ThemedText } from '@/components/ThemedText';
+import { Button, Card, Divider } from 'react-native-paper';
 
-export default function TabTwoScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user's current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
-  );
-}
+const ExploreScreen = () => {
+    const [searchText, setSearchText] = useState('');
+    const [data, setData] = useState([
+        { id: '1', title: 'Eiffel Tower, Paris', description: 'Discover the iconic Eiffel Tower, one of the world\'s most recognized landmarks, with breathtaking views of Paris.' },
+        { id: '2', title: 'Great Barrier Reef, Australia', description: 'Explore the world’s largest coral reef system, full of vibrant marine life and crystal-clear waters.' },
+        { id: '3', title: 'Machu Picchu, Peru', description: 'Experience the ancient Incan city of Machu Picchu, a UNESCO World Heritage site with rich history and breathtaking views.' },
+        { id: '4', title: 'Santorini, Greece', description: 'Known for its white-washed buildings, blue-domed churches, and stunning sunsets over the Aegean Sea.' },
+        { id: '5', title: 'Tokyo, Japan', description: 'Immerse yourself in the bustling metropolis of Tokyo, where tradition and technology meet in vibrant harmony.' },
+        { id: '6', title: 'Grand Canyon, USA', description: 'Explore the Grand Canyon’s natural beauty, offering spectacular views and adventurous activities in the heart of nature.' },
+        { id: '7', title: 'Kyoto, Japan', description: 'Visit Kyoto for its tranquil temples, stunning gardens, and traditional tea houses, especially during cherry blossom season.' },
+        { id: '8', title: 'Victoria Falls, Zimbabwe/Zambia', description: 'Witness the grandeur of Victoria Falls, one of the world’s largest and most spectacular waterfalls.' },
+        { id: '9', title: 'Bora Bora, French Polynesia', description: 'Relax in paradise with overwater bungalows, clear turquoise waters, and a peaceful atmosphere perfect for a getaway.' },
+        { id: '10', title: 'Rome, Italy', description: 'Walk through history in the Eternal City, with landmarks like the Colosseum, Roman Forum, and Vatican City.' },
+    ]);
+    const [filteredData, setFilteredData] = useState(data);
+
+    const handleSearch = () => {
+        const filtered = data.filter(item =>
+            item.title.toLowerCase().includes(searchText.toLowerCase())
+        );
+        setFilteredData(filtered);
+    };
+
+    return (
+        <ThemedView style={styles.container}>
+            <View style={styles.header}>
+                <ThemedText style={styles.welcomeText}>Welcome to Explore!</ThemedText>
+                <ThemedText style={styles.subText}>Discover new destinations and experiences</ThemedText>
+            </View>
+            <View style={styles.searchContainer}>
+                <TextInput
+                    style={styles.searchInput}
+                    placeholder="Search destinations..."
+                    value={searchText}
+                    onChangeText={setSearchText}
+                />
+                <Button mode="contained" onPress={handleSearch} style={styles.searchButton}>
+                    Search
+                </Button>
+            </View>
+            <FlatList
+                data={filteredData}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                    <Card style={styles.card}>
+                        <Card.Title title={item.title} />
+                        <Divider />
+                        <Card.Content>
+                            <ThemedText style={styles.descriptionText}>{item.description}</ThemedText>
+                        </Card.Content>
+                    </Card>
+                )}
+                ListEmptyComponent={
+                    <ThemedText style={styles.emptyText}>No destinations found</ThemedText>
+                }
+            />
+        </ThemedView>
+    );
+};
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
+    container: {
+        flex: 1,
+        padding: 16,
+        backgroundColor: '#f5f5f5',
+    },
+    header: {
+        marginBottom: 20,
+        alignItems: 'center',
+    },
+    welcomeText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: '#333',
+    },
+    subText: {
+        fontSize: 16,
+        color: '#black',
+        marginTop: 8,
+    },
+    searchContainer: {
+        flexDirection: 'row',
+        marginBottom: 16,
+        alignItems: 'center',
+    },
+    searchInput: {
+        flex: 1,
+        borderColor: '#ddd',
+        borderWidth: 1,
+        borderRadius: 8,
+        padding: 10,
+        backgroundColor: '#fff',
+        marginRight: 8,
+    },
+    searchButton: {
+        backgroundColor: '#64b5f6',
+    },
+    card: {
+        marginBottom: 16,
+        borderRadius: 8,
+        elevation: 3,
+    },
+    emptyText: {
+        marginTop: 20,
+        textAlign: 'center',
+        fontSize: 16,
+        color: '#black',
+    },
+    descriptionText: {
+        color: '#000', // Set description text color to black
+    },
 });
+
+export default ExploreScreen;
